@@ -1,0 +1,12 @@
+[project]
+name = "mlx-cartpole"
+version = "0.1.0"
+description = "mlx-accelerated cartpole env"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cma>=4.0.0",
+    "matplotlib>=3.10.1",
+    "mlx>=0.23.2",
+    "numpy>=2.2.3",
+]
