@@ -1,25 +1,26 @@
-# MLX Cartpole with SNN Demo
+# MLX Cartpole with SNN Experiment
 
-This project leverages MLX, a high-performance machine learning framework optimized for Apple Silicon, to implement an accelerated version of the classic cart-pole problem. It serves three primary aims:
+This is a personal project I put together to explore spiking neural networks (SNNs) and reinforcement learning on my Mac. It's a lightweight implementation of the classic cart-pole balancing problem, optimized to run efficiently on Apple Silicon (M1/M2/M3) using MLX. If you're interested in neuromorphic computing or neuroevolution, this might be a fun starting point for your own experiments.
 
-1. **MLX Acceleration**: Harnesses MLX's GPU acceleration on Apple Silicon for efficient computation of the cart-pole environment and spiking neural networks (SNNs).
-2. **Neuromorphic Benchmark**: Implements the cart-pole problem as a benchmark for neuromorphic computing, inspired by "The Cart-Pole Application as a Benchmark for Neuromorphic Computing" by Plank et al. (2024).
-3. **Neuroevolution Demo**: Demonstrates neuroevolution using the CMA-ES algorithm to train SNNs with the `SPIKE_FF_4` encoding type, showcasing a practical application of evolutionary optimization in neuromorphic systems.
+## What It Does
+* **SNNs with Apple Silicon acceleration**: Uses MLX to speed up physics and neural network simulations, making it fast enough to run locally on a MacBook or Mac Mini.
+* **Neuroevolution demo**: Trains spiking networks using CMA-ES (a genetic algorithm) instead of traditional backpropagation.
+* **Four difficulty levels**: Ranging from "easy" (full observations) to "hardest" (limited inputs), so you can test how well your SNN handles different challenges.
 
-## Project Structure
+## Why I Built It
+I wanted to see if I could train a spiking neural network locally without relying on cloud GPUs. Apple Silicon's unified memory architecture and GPU make it a great platform for small-scale experiments like this—it's fast, quiet, and doesn't overheat. The cart-pole problem is a simple but effective benchmark for testing SNNs, and I thought it'd be interesting to see how well they perform with evolutionary training.
 
-- **`cartpole.py`**: A general-purpose cart-pole environment (`MLXCartpole`) optimized with MLX for Apple Silicon.
-- **`demo.py`**: A neuroevolution demo featuring a basic SNN implementation (`IzhikevichLayer`, `Network`), simulation logic, and experiment runner using `SPIKE_FF_4` encoding.
+## How It Works
+* `cartpole.py`: Handles the physics simulation, accelerated with MLX.
+* `demo.py`: Runs the neuroevolution loop, using Izhikevich neurons for the SNN (a good balance of simplicity and bio-realism).
 
-## Why MLX on Apple Silicon?
+## Why Apple Silicon?
+Because it's what I have, and it's surprisingly capable for this kind of work. The way Apple Silicon handles memory and graphics together means MLX can run experiments efficiently without needing high-end hardware. It's a great way to experiment with AI concepts on consumer-grade devices.
 
-MLX provides seamless GPU acceleration on Apple Silicon (M1/M2/M3 chips), enabling fast matrix operations and neural network computations. This project uses MLX to accelerate the physics simulation in `MLXCartpole` and the SNN dynamics in `demo.py`, making it particularly efficient on macOS systems with Apple Silicon.
+## For Others Who Might Be Interested
+If you're into:
+* **Neuromorphic computing** (SNNs that use spikes instead of traditional neurons),
+* **Evolutionary algorithms** (training networks without gradients),
+* **Local experimentation** (no cloud dependencies),
 
-## Difficulty Levels
-
-The cart-pole problem is implemented with four difficulty levels, as outlined in the neuromorphic benchmark paper:
-
-- **EASY**: 4 observations (position, velocity, angle, angular velocity), 2 actions (left, right).
-- **MEDIUM**: 4 observations, 3 actions (left, right, do-nothing) with an activity threshold.
-- **HARD**: 2 observations (position, angle), 3 actions.
-- **HARDEST**: 2 observations, 2 actions.
+...this project might be a useful reference or starting point. It's not polished or production-ready, but it's been a fun way for me to learn and experiment.
