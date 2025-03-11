@@ -16,7 +16,7 @@ Apple Silicon’s unified memory architecture and powerful GPU make it an ideal 
 
 - **`cartpole.py`**: A general-purpose, MLX-accelerated cart-pole environment (`MLXCartpole`) for flexible experimentation.
 - **`demo.py`**: A neuroevolution demo with a full SNN implementation (`IzhikevichLayer`, `Network`), simulation logic, and experiment runner using `SPIKE_FF_2` encoding.
-- **`README.md`**: This guide.
+- **`visualise.py`**: A utility package for visualising the best performing network at the end of an evolutionary run.
 
 ## Difficulty Levels
 
