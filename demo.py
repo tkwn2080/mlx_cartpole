@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import mlx.core as mx
 import numpy as np
 from cartpole import DifficultyLevel, MLXCartpole
@@ -8,6 +10,7 @@ import datetime
 import csv
 import matplotlib.pyplot as plt
 import time
+from visualise import generate_video  # Import the visualization function
 
 # Izhikevich Neuron Layer
 class IzhikevichLayer:
@@ -168,9 +171,47 @@ def run_simulation(net, env, max_steps=1000):
         mx.eval(obs, reward, done)
     
     step_counts = env.step_count.reshape(population_size, n_trials)
-    fitness = mx.mean(step_counts, axis=1)
+    if env.difficulty == DifficultyLevel.MEDIUM:
+        do_nothing_counts = env.do_nothing_count.reshape(population_size, n_trials)
+        ratio = do_nothing_counts / step_counts
+        fitness_per_trial = mx.where(
+            ratio > env.activity_threshold,
+            step_counts,
+            do_nothing_counts / env.activity_threshold
+        )
+        fitness = mx.mean(fitness_per_trial, axis=1)
+    else:
+        fitness = mx.mean(step_counts, axis=1)
     
     return fitness
+
+def run_visualisation_trial(net, env, genotype, max_steps=1000):
+    """Run a single trial with the given genotype and record states and actions."""
+    net.set_parameters(genotype[None, :])  # Set parameters for one individual
+    obs = env.reset()
+    done = False
+    states = []
+    actions_list = []
+    
+    for step in range(max_steps):
+        if done:
+            break
+        
+        obs_reshaped = obs.reshape(1, 1, -1)  # population_size=1, n_trials=1
+        pos_parts = mx.maximum(obs_reshaped, 0)
+        neg_parts = mx.maximum(-obs_reshaped, 0)
+        raw_inputs = mx.concatenate([pos_parts, neg_parts], axis=-1)
+        
+        output_spikes = net.call(raw_inputs)
+        action = mx.argmax(output_spikes, axis=-1).item()  # Single action
+        
+        states.append(env.state[0].tolist())  # Record state
+        actions_list.append(action)
+        
+        obs, reward, done, _ = env.step(mx.array([action]))
+        mx.eval(obs, reward, done)
+    
+    return states, actions_list
 
 def main(test_mode=False, difficulty: DifficultyLevel = DifficultyLevel.EASY):
     """Run the SNN experiment with SPIKE_FF_2 encoding."""
@@ -188,7 +229,7 @@ def main(test_mode=False, difficulty: DifficultyLevel = DifficultyLevel.EASY):
     else:
         print("Starting full experiment...")
         population_size = 500
-        n_generations = 100
+        n_generations = 200
         n_trials = 50
         max_steps = 15000
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -244,6 +285,17 @@ def main(test_mode=False, difficulty: DifficultyLevel = DifficultyLevel.EASY):
     top_indices = mx.argpartition(-fitness, kth=num_top-1)[:num_top]
     top_fitness = fitness[top_indices].tolist()
     print(f"Top {num_top} fitness values: {top_fitness}")
+
+    # Visualize the best performer
+    best_genotype = es.result.xbest
+    net_vis = Network(1, 1, n_input, n_hidden, n_output, timesteps)  # Single individual, single trial
+    env_vis = MLXCartpole(batch_size=1, difficulty=difficulty, max_steps=max_steps)
+    n_visualise_trials = 3
+    print(f"Generating visualizations for {n_visualise_trials} trials of the best performer...")
+    for trial in range(n_visualise_trials):
+        states, actions = run_visualisation_trial(net_vis, env_vis, best_genotype, max_steps=max_steps)
+        generate_video(states, actions, output_dir, trial, difficulty)
+        print(f"Generated video for trial {trial + 1}: {os.path.join(output_dir, f'trial_{trial}.mp4')}")
 
     # Plot performance
     plt.figure(figsize=(10, 6))
