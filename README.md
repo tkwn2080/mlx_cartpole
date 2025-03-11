@@ -1,4 +1,4 @@
-# MLX Cartpole with SNN Demo
+# MLX Cartpole
 
 This project brings the classic cart-pole problem to your Apple Silicon device (M1/M2/M3 Macs) using MLX, a high-performance machine learning framework optimized for Apple's GPU acceleration. Designed for local experimentation, it enables homebrew enthusiasts to explore reinforcement learning (RL), neuroevolution, and neuromorphic computing right from their MacBooks or Mac Minis. With a lightweight setup and efficient computation, it’s perfect for tinkering with cutting-edge AI concepts on consumer hardware.
 
